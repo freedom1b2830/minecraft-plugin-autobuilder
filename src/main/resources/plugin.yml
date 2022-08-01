@@ -1,0 +1,3 @@
+name: freedom1b2830-plugin-autobuilder
+main: freedom1b2830.minecraft.plugin.autobuilder.Plugin
+version: 1.0
