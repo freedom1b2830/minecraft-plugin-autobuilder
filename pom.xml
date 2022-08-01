@@ -13,6 +13,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <mainClass>NO MAIN CLASS NEEDED IT MINECRAFT PLUGIN, move this jar file to plugins dir</mainClass>
+
     </properties>
     <repositories>
         <repository>
@@ -39,4 +41,37 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <!--JAR -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-Plugin</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${mainClass}</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--JAR -->
+
+        </plugins>
+    </build>
+
+
 </project>
