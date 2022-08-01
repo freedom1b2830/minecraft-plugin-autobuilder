@@ -4,6 +4,6 @@ import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BuilderConfig {
-    public long timeCheck = 60000;
-    public CopyOnWriteArrayList<BuilderEntity> plugins = new CopyOnWriteArrayList<>(Collections.singletonList(new BuilderEntityExample()));
+    public final long timeCheck = 60000;
+    public final CopyOnWriteArrayList<BuilderEntity> plugins = new CopyOnWriteArrayList<>(Collections.singletonList(new BuilderEntityExample()));
 }

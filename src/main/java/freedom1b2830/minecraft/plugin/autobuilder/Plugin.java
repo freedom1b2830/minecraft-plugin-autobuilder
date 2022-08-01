@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import freedom1b2830.minecraft.plugin.autobuilder.config.BuilderConfig;
 import freedom1b2830.minecraft.plugin.autobuilder.config.BuilderEntity;
+import freedom1b2830.minecraft.plugin.autobuilder.helpers.Githelper;
+import freedom1b2830.minecraft.plugin.autobuilder.helpers.Shell;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,14 +34,24 @@ public class Plugin extends JavaPlugin {
     }
 
     public void update(BuilderEntity plugin) {
+        //TODO get GIT UPDATE
+        try {
+            boolean buildNeeded = Githelper.pull(plugin.gitUrl, plugin.repoDir);
+            if (buildNeeded) {
+                boolean ret = Shell.exec(plugin.exeDir, plugin.exeScript);
+            }
+        } catch (IOException | GitAPIException e) {
+            throw new RuntimeException(e);
+        }
+        // if commit exist ->maven build
     }
 
-    Thread executor = new Thread(new Runnable() {
+    final Thread executor = new Thread(new Runnable() {
         @Override
         public void run() {
             started = true;
             do {
-                config.plugins.stream().forEachOrdered(pluginForBuild -> update(pluginForBuild));
+                config.plugins.forEach(pluginForBuild -> update(pluginForBuild));
                 try {
                     Thread.sleep(getInstance().config.timeCheck);
                 } catch (InterruptedException e) {
