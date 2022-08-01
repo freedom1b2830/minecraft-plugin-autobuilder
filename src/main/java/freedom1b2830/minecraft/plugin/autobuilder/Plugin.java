@@ -40,14 +40,24 @@ public class Plugin extends JavaPlugin {
         //TODO get GIT UPDATE
         try {
             boolean buildNeeded = Githelper.pull(plugin.gitUrl, plugin.repoDir);
+            sendToOps(String.format("freedom1b2830.autobuilder: a git commit for the [%s] plugin has arrived.", plugin.gitUrl));
             if (buildNeeded) {
                 boolean ret = Shell.exec(plugin.exeDir, plugin.exeScript);
+                sendToOps(String.format("freedom1b2830.autobuilder: plugin [%s] is builded.", plugin.gitUrl));
                 return ret;
             }
-        } catch (IOException | GitAPIException e) {
+        } catch (IOException | GitAPIException | InterruptedException e) {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    private static void sendToOps(String message) {
+        getInstance().getServer().getOnlinePlayers().parallelStream().filter(player -> {
+            return player.isOp() || player.hasPermission("freedom1b2830.autobuilder.notify");
+        }).forEachOrdered(player -> {
+            player.sendMessage(message);
+        });
     }
 
     final Thread executor = new Thread(new Runnable() {
@@ -79,7 +89,7 @@ public class Plugin extends JavaPlugin {
         getInstance().getServer().dispatchCommand(console, reloadCMD);
     }
 
-    BuilderConfig config = new BuilderConfig();
+    public BuilderConfig config = new BuilderConfig();
 
     boolean started = false;
 

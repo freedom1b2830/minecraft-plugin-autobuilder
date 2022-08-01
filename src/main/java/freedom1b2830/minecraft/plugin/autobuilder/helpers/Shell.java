@@ -1,5 +1,7 @@
 package freedom1b2830.minecraft.plugin.autobuilder.helpers;
 
+import freedom1b2830.minecraft.plugin.autobuilder.Plugin;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,18 +11,21 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Shell {
-    public static boolean exec(File exeDir, File exeScript) throws IOException {
+    public static boolean exec(File exeDir, File exeScript) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder(getShell().getAbsolutePath(), exeScript.getAbsolutePath());
         processBuilder.directory(exeDir);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
-        while (true) {
-            String out = process.inputReader(StandardCharsets.UTF_8).readLine();
-            if (out == null) {
-                break;
+        if (Plugin.getInstance().config.debug) {
+            while (true) {
+                String out = process.inputReader(StandardCharsets.UTF_8).readLine();
+                if (out == null) {
+                    Plugin.getInstance().getLogger().info(out);
+                    break;
+                }
             }
         }
-        int exit = process.exitValue();
+        int exit = process.waitFor();
         return exit == 0;
     }
 
