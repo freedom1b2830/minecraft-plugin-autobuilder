@@ -13,7 +13,7 @@ public class BuilderEntityExample extends BuilderEntity {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        exeScript = new File(new File(Plugin.pluginsDir, "freedom1b2830-plugin-autobuilder"), "update.sh");
+        exeScript = new File(new File(Plugin.pluginsDir, "freedom1b2830-plugin-autobuilder-SOURCES"), "update.sh");
         File exeScriptTmp = new File(exeScript.getAbsolutePath());//FIX NPE for "exeScript.getAbsolutePath()"
         exeDir = new File(exeScriptTmp.getParentFile().getAbsolutePath());
         repoDir = exeDir;
