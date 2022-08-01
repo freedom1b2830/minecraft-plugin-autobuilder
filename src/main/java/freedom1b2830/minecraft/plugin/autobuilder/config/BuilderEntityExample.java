@@ -12,6 +12,7 @@ public class BuilderEntityExample extends BuilderEntity {
             throw new RuntimeException(e);
         }
         exeScript = new File("update.sh");
-        exeDir = new File(exeScript.getParentFile().getAbsolutePath());
+        File exeScriptTmp = new File(exeScript.getAbsolutePath());//FIX NPE for "exeScript.getAbsolutePath()"
+        exeDir = new File(exeScriptTmp.getParentFile().getAbsolutePath());
     }
 }
