@@ -26,7 +26,6 @@ public final class Githelper {
             try (Git git = Git.open(repoDir)) {
                 PullResult pullResult = git.pull().call();
                 if (pullResult.isSuccessful()) {
-                    LOGGER.info("pullResult.isSuccessful()");
                     FetchResult result = pullResult.getFetchResult();
                     int index = 0;
                     for (TrackingRefUpdate trackingRefUpdate : result.getTrackingRefUpdates()) {

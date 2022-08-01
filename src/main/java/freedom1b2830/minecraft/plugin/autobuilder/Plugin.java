@@ -6,8 +6,11 @@ import freedom1b2830.minecraft.plugin.autobuilder.config.BuilderConfig;
 import freedom1b2830.minecraft.plugin.autobuilder.config.BuilderEntity;
 import freedom1b2830.minecraft.plugin.autobuilder.helpers.Githelper;
 import freedom1b2830.minecraft.plugin.autobuilder.helpers.Shell;
+import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,17 +36,18 @@ public class Plugin extends JavaPlugin {
         return instance;
     }
 
-    public void update(BuilderEntity plugin) {
+    public boolean update(BuilderEntity plugin) {
         //TODO get GIT UPDATE
         try {
             boolean buildNeeded = Githelper.pull(plugin.gitUrl, plugin.repoDir);
             if (buildNeeded) {
                 boolean ret = Shell.exec(plugin.exeDir, plugin.exeScript);
+                return ret;
             }
         } catch (IOException | GitAPIException e) {
             throw new RuntimeException(e);
         }
-        // if commit exist ->maven build
+        return false;
     }
 
     final Thread executor = new Thread(new Runnable() {
@@ -51,7 +55,16 @@ public class Plugin extends JavaPlugin {
         public void run() {
             started = true;
             do {
-                config.plugins.forEach(pluginForBuild -> update(pluginForBuild));
+                List<Boolean> resultList = config.plugins.stream().map(pluginForBuild -> update(pluginForBuild))
+                        .filter(result -> {
+                            if (result) {
+                                return true;
+                            }
+                            return false;
+                        }).collect(Collectors.toList());
+                if (!resultList.isEmpty()) {
+                    reloadServer(config.reloadCMD);
+                }
                 try {
                     Thread.sleep(getInstance().config.timeCheck);
                 } catch (InterruptedException e) {
@@ -60,6 +73,11 @@ public class Plugin extends JavaPlugin {
             } while (started);
         }
     });
+
+    private void reloadServer(String reloadCMD) {
+        @NotNull ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+        getInstance().getServer().dispatchCommand(console, reloadCMD);
+    }
 
     BuilderConfig config = new BuilderConfig();
 

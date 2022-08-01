@@ -1,7 +1,5 @@
 package freedom1b2830.minecraft.plugin.autobuilder.helpers;
 
-import freedom1b2830.minecraft.plugin.autobuilder.Plugin;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,9 +19,9 @@ public class Shell {
             if (out == null) {
                 break;
             }
-            Plugin.getInstance().getLogger().info(out);
         }
-        return false;
+        int exit = process.exitValue();
+        return exit == 0;
     }
 
     public enum Shells {
