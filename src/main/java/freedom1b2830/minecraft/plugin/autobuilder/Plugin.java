@@ -67,7 +67,7 @@ public class Plugin extends JavaPlugin {
     public static final File pluginsDir = getPluginsDir();
     public static final File builderDir = getBuilderDir();
 
-    private static File getBuilderDir() {
+    public static File getBuilderDir() {
         return new File(getPluginsDir(), "freedom1b2830-plugin-autobuilder");
     }
 
