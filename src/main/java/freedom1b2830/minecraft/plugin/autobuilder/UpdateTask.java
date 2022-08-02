@@ -22,14 +22,14 @@ public class UpdateTask implements Runnable {
                 .filter(result -> result).toList();
         if (!resultList.isEmpty()) {
             try {
-                reloadServer(config.reloadCMD);
+                reloadServer();
             } catch (ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private void reloadServer(String reloadCMD) throws ExecutionException, InterruptedException {
+    private void reloadServer() throws ExecutionException, InterruptedException {
         sendToOps("freedom1b2830.autobuilder: >reload server< ");
     }
 
