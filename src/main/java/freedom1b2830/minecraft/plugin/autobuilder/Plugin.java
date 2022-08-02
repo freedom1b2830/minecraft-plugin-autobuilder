@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,7 +39,6 @@ public class Plugin extends JavaPlugin {
     }
 
     public boolean update(BuilderEntity plugin) {
-        //TODO get GIT UPDATE
         try {
             boolean buildNeeded = Githelper.pull(plugin.gitUrl, plugin.repoDir);
             sendToOps(String.format("freedom1b2830.autobuilder: a git commit for the [%s] plugin has arrived.", plugin.gitUrl));
@@ -58,6 +59,7 @@ public class Plugin extends JavaPlugin {
         }).forEachOrdered(player -> {
             player.sendMessage(message);
         });
+        getInstance().getLogger().info(message);
     }
 
     final Thread executor = new Thread(new Runnable() {
@@ -73,7 +75,11 @@ public class Plugin extends JavaPlugin {
                             return false;
                         }).collect(Collectors.toList());
                 if (!resultList.isEmpty()) {
-                    reloadServer(config.reloadCMD);
+                    try {
+                        reloadServer(config.reloadCMD);
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 try {
                     Thread.sleep(getInstance().config.timeCheck);
@@ -84,9 +90,14 @@ public class Plugin extends JavaPlugin {
         }
     });
 
-    private void reloadServer(String reloadCMD) {
+    private void reloadServer(String reloadCMD) throws ExecutionException, InterruptedException {
         @NotNull ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-        getInstance().getServer().dispatchCommand(console, reloadCMD);
+        Bukkit.getScheduler().callSyncMethod(this, new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                return getInstance().getServer().dispatchCommand(console, reloadCMD);
+            }
+        }).get();
     }
 
     public BuilderConfig config = new BuilderConfig();
