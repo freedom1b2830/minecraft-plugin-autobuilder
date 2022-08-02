@@ -76,7 +76,7 @@ public class Plugin extends JavaPlugin {
 
     public static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-    private void readConfig() {
+    public void readConfig() {
         try {
             if (!builderDir.exists()) {
                 Files.createDirectories(builderDir.toPath());

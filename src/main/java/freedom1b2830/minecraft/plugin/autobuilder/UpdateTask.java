@@ -17,6 +17,7 @@ public class UpdateTask implements Runnable {
 
     @Override
     public void run() {
+        getInstance().readConfig();
         BuilderConfig config = getInstance().config;
         List<Boolean> resultList = config.plugins.stream().map(this::update)
                 .filter(result -> result).toList();
