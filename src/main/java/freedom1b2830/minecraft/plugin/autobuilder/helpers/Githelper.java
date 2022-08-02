@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.SubmoduleConfig;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public final class Githelper {
     public static boolean pull(URL gitUrl, File repoDir) throws IOException, GitAPIException {
         if (repoDir.exists()) {
             try (Git git = Git.open(repoDir)) {
-                PullResult pullResult = git.pull().call();
+                PullResult pullResult = git.pull().setRecurseSubmodules(SubmoduleConfig.FetchRecurseSubmodulesMode.YES).call();
                 if (pullResult.isSuccessful()) {
                     FetchResult result = pullResult.getFetchResult();
                     int index = 0;
@@ -38,7 +39,9 @@ public final class Githelper {
                 }
             }
         } else {
-            CloneCommand a = Git.cloneRepository().setURI(gitUrl.toString()).setDirectory(repoDir).setCloneAllBranches(true);
+            CloneCommand a = Git.cloneRepository().setURI(gitUrl.toString()).setDirectory(repoDir)
+                    .setCloneSubmodules(true)
+                    .setCloneAllBranches(true);
             Git ret2 = a.call();
             ret2.close();
             return true;
