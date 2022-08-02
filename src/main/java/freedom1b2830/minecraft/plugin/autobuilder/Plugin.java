@@ -41,8 +41,8 @@ public class Plugin extends JavaPlugin {
     public boolean update(BuilderEntity plugin) {
         try {
             boolean buildNeeded = Githelper.pull(plugin.gitUrl, plugin.repoDir);
-            sendToOps(String.format("freedom1b2830.autobuilder: a git commit for the [%s] plugin has arrived.", plugin.gitUrl));
             if (buildNeeded) {
+                sendToOps(String.format("freedom1b2830.autobuilder: a git commit for the [%s] plugin has arrived.", plugin.gitUrl));
                 boolean ret = Shell.exec(plugin.exeDir, plugin.exeScript);
                 sendToOps(String.format("freedom1b2830.autobuilder: plugin [%s] is builded.", plugin.gitUrl));
                 return ret;
