@@ -6,18 +6,14 @@ import freedom1b2830.minecraft.plugin.autobuilder.config.BuilderConfig;
 import freedom1b2830.minecraft.plugin.autobuilder.config.BuilderEntity;
 import freedom1b2830.minecraft.plugin.autobuilder.helpers.Githelper;
 import freedom1b2830.minecraft.plugin.autobuilder.helpers.Shell;
-import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,15 +50,19 @@ public class Plugin extends JavaPlugin {
     }
 
     private static void sendToOps(String message) {
-        getInstance().getServer().getOnlinePlayers().parallelStream().filter(player -> {
-            return player.isOp() || player.hasPermission("freedom1b2830.autobuilder.notify");
-        }).forEachOrdered(player -> {
-            player.sendMessage(message);
-        });
-        getInstance().getLogger().info(message);
+        if (getInstance().config.notifyOperators) {
+            getInstance().getServer().getOnlinePlayers().parallelStream().filter(player -> {
+                return player.isOp() || player.hasPermission("freedom1b2830.autobuilder.notify");
+            }).forEachOrdered(player -> {
+                player.sendMessage(message);
+            });
+        }
+        if (getInstance().config.notifyConsole) {
+            getInstance().getLogger().info(message.replaceAll("freedom1b2830.autobuilder:", ""));
+        }
     }
 
-    final Thread executor = new Thread(new Runnable() {
+    final Thread executor = new Thread(new Runnable() {//TODO  EXECUTOR SERVICE
         @Override
         public void run() {
             started = true;
@@ -91,13 +91,7 @@ public class Plugin extends JavaPlugin {
     });
 
     private void reloadServer(String reloadCMD) throws ExecutionException, InterruptedException {
-        @NotNull ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-        Bukkit.getScheduler().callSyncMethod(this, new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return getInstance().getServer().dispatchCommand(console, reloadCMD);
-            }
-        }).get();
+        sendToOps("freedom1b2830.autobuilder: >reload server< ");
     }
 
     public BuilderConfig config = new BuilderConfig();

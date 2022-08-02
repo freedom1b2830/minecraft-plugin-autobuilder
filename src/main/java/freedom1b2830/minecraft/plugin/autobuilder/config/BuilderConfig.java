@@ -8,4 +8,6 @@ public class BuilderConfig {
     public final CopyOnWriteArrayList<BuilderEntity> plugins = new CopyOnWriteArrayList<>(Collections.singletonList(new BuilderEntityExample()));
     public String reloadCMD = "reload confirm";
     public boolean debug = false;
+    public boolean notifyOperators = true;
+    public boolean notifyConsole = true;
 }
