@@ -20,9 +20,9 @@ public class Shell {
             while (true) {
                 String out = process.inputReader(StandardCharsets.UTF_8).readLine();
                 if (out == null) {
-                    Plugin.getInstance().getLogger().info(out);
                     break;
                 }
+                Plugin.getInstance().getLogger().info(out);
             }
         }
         int exit = process.waitFor();
